@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+if [ -f /usr/local/etc/php/conf.d/20-docker-php-ext-xdebug.ini ]; then
+    $(which rm) -f /usr/local/etc/php/conf.d/20-docker-php-ext-xdebug.ini
+    echo 'xdebug disabled'
+    exit 0
+fi
+
+$(which cat) <<EOF > /usr/local/etc/php/conf.d/20-docker-php-ext-xdebug.ini
+zend_extension=xdebug.so
+xdebug.remote_host=$XDEBUG_HOST
+EOF
+echo 'xdebug enabled'
+
+exit 0
