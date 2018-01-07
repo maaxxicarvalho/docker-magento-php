@@ -10,7 +10,7 @@ ENV DEV_LIBS libfreetype6-dev libjpeg62-turbo-dev libpng12-dev libgd-dev libmagi
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends curl git pv mysql-client wget unzip zip \
     openssh-server unzip vim $DEV_LIBS \
-    && pecl install igbinary && pecl install imagick && pecl install && pecl install redis && pecl install memcached \
+    && pecl install igbinary && pecl install imagick && pecl install && pecl install redis && pecl install memcached-2.2.0.tgz \
     && pecl install xdebug && pecl install lzf && pecl install memcache \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure imap --with-kerberos --with-imap-ssl \
