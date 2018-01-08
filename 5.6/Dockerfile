@@ -23,6 +23,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends curl git pv
     && phpize && ./configure && make && make install \
     && docker-php-ext-enable igbinary imagick redis snappy memcache memcached \
     && echo "extension=lzf.so" > /usr/local/etc/php/conf.d/ext-lzfs.ini \
+    && rm -rf php-ext-snappy \
     && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun
 
