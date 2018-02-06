@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
 docker build \
-    -t maxacarvalho/hypernode-php:5-fpm \
-    -t maxacarvalho/hypernode-php:5.6-fpm \
+    -t maxacarvalho/docker-magento-php:5.6-fpm \
     -f Dockerfile .
