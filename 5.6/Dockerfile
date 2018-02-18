@@ -39,9 +39,18 @@ RUN apt-get install -y --no-install-recommends $DEV_LIBS \
     && docker-php-ext-enable igbinary imagick redis snappy memcache memcached \
     && echo "extension=lzf.so" > /usr/local/etc/php/conf.d/ext-lzfs.ini \
     && rm -rf php-ext-snappy \
-    && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
-    && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun \
-    && chmod +x /usr/bin/magerun
+    && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin/ --filename=composer \
+    && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun
+
+RUN set -ex \
+	&& cd /usr/local/etc \
+    && { \
+		echo '[www]'; \
+		echo 'clear_env = no'; \
+		echo; \
+		echo '; Ensure worker stdout and stderr are sent to the main error log.'; \
+		echo 'catch_workers_output = yes'; \
+	} | tee php-fpm.d/docker.conf
 
 # Cleanup
 RUN apt-get -y autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -58,36 +67,6 @@ COPY docker-php-entrypoint /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
 ENTRYPOINT ["docker-php-entrypoint"]
-
-RUN set -ex \
-	&& cd /usr/local/etc \
-#	&& if [ -d php-fpm.d ]; then \
-		# for some reason, upstream's php-fpm.conf.default has "include=NONE/etc/php-fpm.d/*.conf"
-#		sed 's!=NONE/!=!g' php-fpm.conf.default | tee php-fpm.conf > /dev/null; \
-#		cp php-fpm.d/www.conf.default php-fpm.d/www.conf; \
-#	else \
-		# PHP 5.x doesn't use "include=" by default, so we'll create our own simple config that mimics PHP 7+ for consistency
-#		mkdir php-fpm.d; \
-#		cp php-fpm.conf.default php-fpm.d/www.conf; \
-#		{ \
-#			echo '[global]'; \
-#			echo 'include=etc/php-fpm.d/*.conf'; \
-#		} | tee php-fpm.conf; \
-#	fi \
-	&& { \
-		echo '[www]'; \
-		echo 'clear_env = no'; \
-		echo; \
-		echo '; Ensure worker stdout and stderr are sent to the main error log.'; \
-		echo 'catch_workers_output = yes'; \
-	} | tee php-fpm.d/docker.conf \
-	&& { \
-		echo '[global]'; \
-		echo 'daemonize = no'; \
-		echo; \
-		echo '[www]'; \
-		echo 'listen = 9000'; \
-	} | tee php-fpm.d/zz-docker.conf
 
 EXPOSE 9000
 CMD ["php-fpm"]
