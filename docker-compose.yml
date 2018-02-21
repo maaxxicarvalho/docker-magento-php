@@ -1,0 +1,65 @@
+version: '3'
+services:
+  webserver:
+    image: nginx
+    volumes:
+      - .app:/app/:cached
+      - ./logs/webserver/:/var/log/nginx/:cached
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - app
+    working_dir: /app/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100k
+  app:
+    image: maxacarvalho/docker-for-php:5.6-fpm
+    volumes:
+      - ./app:/app/:cached
+      - ./logs/app/:/usr/local/var/log/:cached
+      - ./docker/conf/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/magento/app/etc/local.xml:/var/www/smoke/app/etc/local.xml
+      - ./docker/magento/app/etc/modules/Skuiq_SendSaleInfo.xml:/var/www/smoke/app/etc/modules/Skuiq_SendSaleInfo.xml
+      - ./docker/magento/app/etc/modules/Skuiq_LogProductUpdate.xml:/var/www/smoke/app/etc/modules/Skuiq_LogProductUpdate.xml
+      - ./docker/magento/app/etc/modules/Skuiq_SimpleConfigRelation.xml:/var/www/smoke/app/etc/modules/Skuiq_SimpleConfigRelation.xml
+    working_dir: /var/www/smoke/
+    environment:
+      WWWUSER: "${WWWUSER}"
+      XDEBUG_HOST: "${XDEBUG_HOST}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100k
+  node:
+    build:
+      context: ./docker/images/node
+      dockerfile: Dockerfile
+      args:
+        uid: "${WWWUSER}"
+    image: smoke/node
+    user: node
+    volumes:
+      - .:/var/www/html
+  cache:
+    image: redis:alpine
+    volumes:
+      - cache_data:/data
+    ports:
+      - "6379:6379"
+  db:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: app
+      MYSQL_USER: app
+      MYSQL_PASSWORD: secret
+    volumes:
+      - db_data:/var/lib/mysql/:cached
+volumes:
+  db_data: {}
+  cache_data: {}

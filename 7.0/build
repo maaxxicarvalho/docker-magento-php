@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-docker build \
-    -t maxacarvalho/docker-magento-php:7.0-fpm \
-    -f Dockerfile .
