@@ -1,13 +1,14 @@
 #!/bin/sh
 set -e
 
+# Run PHP-FPM as current user
 if [ ! -z "$WWWUSER" ]; then
     sed -i "s/user\ \=.*/user\ \= $WWWUSER/g" /usr/local/etc/php-fpm.d/www.conf
-
-    # Set UID of user "theuser"
-    usermod -u $WWWUSER theuser
+    # Set UID of user "magedocker"
+    usermod -u $WWWUSER magedocker
 fi
 
+# Ensure /.composer exists and is writable
 if [ ! -d /.composer ]; then
     mkdir /.composer
 fi
@@ -18,4 +19,9 @@ if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm "$@"
 fi
 
-exec gosu $WWWUSER "$@"
+if [ $# -gt 0 ];then
+    # If we passed a command, run it as current user
+    exec gosu $WWWUSER "$@"
+else
+    exec "$@"
+fi

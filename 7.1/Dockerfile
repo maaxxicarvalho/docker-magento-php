@@ -2,10 +2,9 @@ FROM php:7.1-fpm
 
 LABEL maintainer="Max Carvalho <max.carvalho@cloverbox.com.br>"
 
-RUN useradd -ms /bin/bash -u 1337 theuser
-
+# Gosu
+RUN useradd -ms /bin/bash -u 1337 magedocker
 ENV GOSU_VERSION 1.7
-
 RUN set -x \
     && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
@@ -17,12 +16,15 @@ RUN set -x \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true
 
+# Global
+RUN apt-get update -qq && apt-get install -y --no-install-recommends curl git pv mysql-client wget unzip zip \
+    openssh-server unzip vim
+
+# PHP
 ENV DEV_LIBS libfreetype6-dev libjpeg62-turbo-dev libpng12-dev libgd-dev libmagickwand-dev libc-client-dev libkrb5-dev \
     libicu-dev libldap2-dev libmcrypt-dev openssl unixodbc-dev libxml2-dev freetds-dev libssl-dev libpspell-dev libtidy-dev \
     libxslt-dev libmemcached-dev
-
-RUN apt-get update -qq && apt-get install -y --no-install-recommends curl git pv mysql-client wget unzip zip \
-    openssh-server unzip vim $DEV_LIBS \
+RUN apt-get install -y --no-install-recommends $DEV_LIBS \
     && pecl install igbinary && pecl install imagick && pecl install && pecl install redis && pecl install memcached \
     && pecl install xdebug && pecl install lzf \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -37,12 +39,33 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends curl git pv
     && docker-php-ext-enable igbinary imagick redis snappy memcached \
     && echo "extension=lzf.so" > /usr/local/etc/php/conf.d/ext-lzfs.ini \
     && rm -rf php-ext-snappy \
-    && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
+    && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin/ --filename=composer \
     && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun
 
+RUN set -ex \
+    && cd /usr/local/etc \
+    && { \
+        echo '[www]'; \
+        echo 'clear_env = no'; \
+        echo 'catch_workers_output = yes'; \
+    } | tee php-fpm.d/docker.conf
+
+# Cleanup
+RUN apt-get -y autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN mkdir -p /usr/local/share/n98-magerun/modules && cd /usr/local/share/n98-magerun/modules \
+    && git clone https://github.com/peterjaap/magerun-addons.git pj-addons
+
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
+COPY php.ini /usr/local/etc/php/conf.d/php.ini
 COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-zxdebug.ini
-COPY toggle-xdebug /usr/bin/toggle-xdebug
-COPY docker.conf /usr/local/etc/php-fpm.d/docker.conf
+COPY toggle-xdebug /usr/local/bin/toggle-xdebug
+
 COPY docker-php-entrypoint /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-php-entrypoint
+
+ENTRYPOINT ["docker-php-entrypoint"]
 
 EXPOSE 9000
+CMD ["php-fpm"]
