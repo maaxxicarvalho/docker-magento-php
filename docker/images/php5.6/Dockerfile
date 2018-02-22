@@ -60,7 +60,7 @@ RUN mkdir -p /usr/local/share/n98-magerun/modules && cd /usr/local/share/n98-mag
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-COPY php.ini /usr/local/etc/php/conf.d/php.ini
+COPY php.ini /usr/local/etc/php/php.ini
 COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-zxdebug.ini
 COPY toggle-xdebug /usr/local/bin/toggle-xdebug
 

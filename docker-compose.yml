@@ -1,11 +1,12 @@
 version: '3'
 services:
   webserver:
-    image: nginx
+    image: maxacarvalho/docker-for-nginx
     volumes:
-      - .app:/app/:cached
+      - ./app:/public_html/:cached
+      - ./app/docker/magento/nginx-site.conf:/etc/nginx/conf.d/default.conf
       - ./logs/webserver/:/var/log/nginx/:cached
-    working_dir: /app/
+    working_dir: /public_html/
     ports:
       - "80:80"
       - "443:443"
@@ -18,10 +19,11 @@ services:
   app:
     image: maxacarvalho/docker-for-php:5.6-fpm
     volumes:
-      - ./app:/app/:cached
+      - ./app:/public_html/:cached
+      - ./app/docker/magento/local.xml:/public_html/app/etc/local.xml
       - ./logs/app/:/usr/local/var/log/:cached
 #      - ./docker/conf/php/app.ini:/usr/local/etc/php/conf.d/zzz-app.ini
-    working_dir: /app/
+    working_dir: /public_html/
     environment:
       WWWUSER: "${WWWUSER}"
       XDEBUG_HOST: "${XDEBUG_HOST}"
@@ -38,10 +40,9 @@ services:
       dockerfile: Dockerfile
       args:
         uid: "${WWWUSER}"
-    image: smoke/node
     user: node
     volumes:
-      - .:/var/www/html
+      - ./app:/var/www/html
   cache:
     image: redis:alpine
     volumes:
