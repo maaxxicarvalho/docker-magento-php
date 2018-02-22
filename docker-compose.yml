@@ -40,6 +40,7 @@ services:
       dockerfile: Dockerfile
       args:
         uid: "${WWWUSER}"
+    image: dockertools/node
     user: node
     volumes:
       - ./app:/var/www/html
