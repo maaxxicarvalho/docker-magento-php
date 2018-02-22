@@ -5,12 +5,12 @@ services:
     volumes:
       - .app:/app/:cached
       - ./logs/webserver/:/var/log/nginx/:cached
+    working_dir: /app/
     ports:
       - "80:80"
       - "443:443"
-    links:
+    depends_on:
       - app
-    working_dir: /app/
     logging:
       driver: "json-file"
       options:
@@ -20,15 +20,14 @@ services:
     volumes:
       - ./app:/app/:cached
       - ./logs/app/:/usr/local/var/log/:cached
-      - ./docker/conf/php/php.ini:/usr/local/etc/php/php.ini
-      - ./docker/magento/app/etc/local.xml:/var/www/smoke/app/etc/local.xml
-      - ./docker/magento/app/etc/modules/Skuiq_SendSaleInfo.xml:/var/www/smoke/app/etc/modules/Skuiq_SendSaleInfo.xml
-      - ./docker/magento/app/etc/modules/Skuiq_LogProductUpdate.xml:/var/www/smoke/app/etc/modules/Skuiq_LogProductUpdate.xml
-      - ./docker/magento/app/etc/modules/Skuiq_SimpleConfigRelation.xml:/var/www/smoke/app/etc/modules/Skuiq_SimpleConfigRelation.xml
-    working_dir: /var/www/smoke/
+#      - ./docker/conf/php/app.ini:/usr/local/etc/php/conf.d/zzz-app.ini
+    working_dir: /app/
     environment:
       WWWUSER: "${WWWUSER}"
       XDEBUG_HOST: "${XDEBUG_HOST}"
+    depends_on:
+      - db
+      - cache
     logging:
       driver: "json-file"
       options:
