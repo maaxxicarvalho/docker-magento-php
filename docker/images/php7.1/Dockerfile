@@ -3,7 +3,7 @@ FROM php:7.1-fpm
 LABEL maintainer="Max Carvalho <max.carvalho@cloverbox.com.br>"
 
 # Gosu
-RUN useradd -ms /bin/bash -u 1337 magedocker
+#RUN useradd -ms /bin/bash -u 1337 magedocker
 ENV GOSU_VERSION 1.7
 RUN set -x \
     && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
