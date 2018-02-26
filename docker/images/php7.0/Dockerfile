@@ -3,7 +3,6 @@ FROM php:7.0-fpm
 LABEL maintainer="Max Carvalho <max.carvalho@cloverbox.com.br>"
 
 # Gosu
-RUN useradd -ms /bin/bash -u 1337 magedocker
 ENV GOSU_VERSION 1.7
 RUN set -x \
     && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
@@ -44,7 +43,8 @@ RUN apt-get install -y --no-install-recommends $DEV_LIBS \
     && echo "extension=lzf.so" > /usr/local/etc/php/conf.d/ext-lzfs.ini \
     && rm -rf /tmp/pecl-memcache-php7 php7.zip php-ext-snappy \
     && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin/ --filename=composer \
-    && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun
+    && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun \
+    && mkdir -p /usr/local/var/log && touch /usr/local/var/log/php-fpm.log && chmod 777 /usr/local/var/log/php-fpm.log
 
 RUN set -ex \
     && cd /usr/local/etc \
@@ -65,11 +65,3 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 COPY php.ini /usr/local/etc/php/php.ini
 COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-zxdebug.ini
 COPY toggle-xdebug /usr/local/bin/toggle-xdebug
-
-COPY docker-php-entrypoint /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-php-entrypoint
-
-ENTRYPOINT ["docker-php-entrypoint"]
-
-EXPOSE 9000
-CMD ["php-fpm"]

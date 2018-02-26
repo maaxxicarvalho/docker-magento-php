@@ -3,47 +3,42 @@ services:
   webserver:
     image: maxacarvalho/docker-for-nginx
     volumes:
-      - ./app:/public_html/:cached
-      - ./app/docker/magento/nginx-site.conf:/etc/nginx/conf.d/default.conf
+      - ./app:/app/:cached
       - ./logs/webserver/:/var/log/nginx/:cached
-    working_dir: /public_html/
+      # include the Nginx config necessary for your
+      #- ./app/docker/magento/nginx-site.conf:/etc/nginx/conf.d/default.conf
+    working_dir: /app/
     ports:
       - "80:80"
       - "443:443"
     depends_on:
       - app
-    logging:
-      driver: "json-file"
-      options:
-        max-size: 100k
   app:
-    image: maxacarvalho/docker-for-php:5.6-fpm
+    build:
+      context: docker/app/70
+      dockerfile: Dockerfile
     volumes:
-      - ./app:/public_html/:cached
+      - ./app:/app/:cached
       - ./app/docker/magento/local.xml:/public_html/app/etc/local.xml
       - ./logs/app/:/usr/local/var/log/:cached
-#      - ./docker/conf/php/app.ini:/usr/local/etc/php/conf.d/zzz-app.ini
-    working_dir: /public_html/
+      # include any extra php config file (.ini)
+      #- ./docker/conf/php/app.ini:/usr/local/etc/php/conf.d/zzz-app.ini
+    working_dir: /app/
     environment:
       WWWUSER: "${WWWUSER}"
       XDEBUG_HOST: "${XDEBUG_HOST}"
     depends_on:
       - db
       - cache
-    logging:
-      driver: "json-file"
-      options:
-        max-size: 100k
   node:
     build:
       context: ./docker/images/node
       dockerfile: Dockerfile
       args:
         uid: "${WWWUSER}"
-    image: dockertools/node
     user: node
     volumes:
-      - ./app:/var/www/html
+      - ./app:/app
   cache:
     image: redis:alpine
     volumes:
