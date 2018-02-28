@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+docker build \
+    -t maxacarvalho/docker-for-node:latest \
+    -f Dockerfile .
