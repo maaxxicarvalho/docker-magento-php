@@ -32,35 +32,9 @@ if [ "$MACHINE" == "linux" ]; then
     RLINKCMD="readlink"
 elif [ "$MACHINE" == "mac" ]; then
     RLINKCMD="greadlink"
-    export XDEBUG_HOST=$(ipconfig getifaddr en0) # Ethernet
-
-    if [ -z "$XDEBUG_HOST" ]; then
-        export XDEBUG_HOST=$(ipconfig getifaddr en1) # Wifi
-    fi
-
-    if [ -z "$XDEBUG_HOST" ]; then
-        echo ""
-        echo ""
-        echo ""
-        echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-        echo "@@@@@@@@@@@@ WARNING @@@@@@@@@@@@"
-        echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-        echo "It seems that you're using a Mac."
-        echo "I could not determine your IP address, I need one to make the Xdebug work properly."
-        echo "From my experience you might not be connected to a network at the moment or even using your Phone."
-        echo "..."
-        echo "If you cannot connect to a network and need to use Xdebug please create a network connection "
-        echo "alias by running this command: sudo ifconfig lo0 alias 10.254.254.254"
-        echo "You can find more information here: https://grzegorowski.com/docker-with-xdebug-and-vdebug/"
-        echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-        echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-        echo ""
-        echo ""
-        echo ""
-        export XDEBUG_HOST=10.254.254.254
-    fi
+    export XDEBUG_HOST=docker.for.mac.host.internal
 elif [ "$MACHINE" == "mingw64" ]; then # Git Bash
-    export XDEBUG_HOST=10.0.75.1
+    export XDEBUG_HOST=docker.for.win.localhost
 fi
 
 # Is the environment running
