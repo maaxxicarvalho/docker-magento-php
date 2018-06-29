@@ -1,11 +1,11 @@
-FROM php:7.0-fpm
+FROM php:7.0-fpm-jessie
 
 LABEL maintainer="Max Carvalho <max.carvalho@cloverbox.com.br>"
 
 # Gosu
-ENV GOSU_VERSION 1.7
+ENV GOSU_VERSION 1.10
 RUN set -x \
-    && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
+    && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget rsync && rm -rf /var/lib/apt/lists/* \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
     && export GNUPGHOME="$(mktemp -d)" \
@@ -62,6 +62,6 @@ RUN mkdir -p /usr/local/share/n98-magerun/modules && cd /usr/local/share/n98-mag
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-COPY php.ini /usr/local/etc/php/php.ini
-COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-zxdebug.ini
-COPY toggle-xdebug /usr/local/bin/toggle-xdebug
+COPY conf.d/php.ini /usr/local/etc/php/php.ini
+COPY conf.d/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-zxdebug.ini
+COPY bin/toggle-xdebug /usr/local/bin/toggle-xdebug
