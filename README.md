@@ -1,72 +1,12 @@
-List of installed extensions
+# docker tools for web development
 
-* bcmath
-* blackfire
-* calendar
-* Core
-* ctype
-* curl
-* date
-* dom
-* exif
-* fileinfo
-* filter
-* ftp
-* gd
-* gettext
-* hash
-* hypernode
-* iconv
-* igbinary
-* imagick
-* imap
-* intl
-* json
-* ldap
-* libxml
-* mbstring
-* mcrypt
-* memcache
-* mysqli
-* mysqlnd
-* newrelic
-* odbc
-* openssl
-* pcntl
-* pcre
-* PDO
-* pdo_dblib
-* pdo_mysql
-* PDO_ODBC
-* pdo_pgsql
-* pgsql
-* Phar
-* posix
-* pspell
-* readline
-* redis
-* Reflection
-* session
-* shmop
-* SimpleXML
-* snappy
-* soap
-* sockets
-* SPL
-* standard
-* sysvmsg
-* sysvsem
-* sysvshm
-* tidy
-* tokenizer
-* wddx
-* xml
-* xmlreader
-* xmlrpc
-* xmlwriter
-* xsl
-* Zend OPcache
-* zip
-* zlib
-* Zend OPcache
-* blackfire
+This is just a simple repository that I created to persist the things I've been relying on to do my daily work.
+
+Since the PHP Docker image brings no php-extensions and (for me) it's a boring process to keep adding them to each
+project I created some Docker images with the extensions persisted.
+
+I work with many projects and for each of them a PHP version will be required, that's why I have put together more
+than one PHP version in the repository.
+
+The images also include `gosu` (https://github.com/tianon/gosu)[https://github.com/tianon/gosu] which helps to solve
+the root user Docker issue that can happen on Linux environments.
