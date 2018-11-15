@@ -26,6 +26,7 @@ RUN apt-get install -y --no-install-recommends $DEV_LIBS \
     && echo "extension=lzf.so" > /usr/local/etc/php/conf.d/ext-lzfs.ini \
     && rm -rf php-ext-snappy \
     && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun \
+    && curl -O https://files.magerun.net/n98-magerun2.phar && mv n98-magerun2.phar /usr/bin/magerun2 && chmod +x /usr/bin/magerun2 \
     && mkdir -p /usr/local/var/log && touch /usr/local/var/log/php-fpm.log && chmod 777 /usr/local/var/log/php-fpm.log
 
 # Composer

@@ -31,6 +31,7 @@ RUN apt-get install -y --no-install-recommends $DEV_LIBS \
     && rm -rf /tmp/pecl-memcache-php7 php7.zip php-ext-snappy \
     && php -r "readfile('http://getcomposer.org/installer');" | php -- --install-dir=/usr/local/bin/ --filename=composer \
     && curl -O https://files.magerun.net/n98-magerun.phar && mv n98-magerun.phar /usr/bin/magerun && chmod +x /usr/bin/magerun \
+    && curl -O https://files.magerun.net/n98-magerun2.phar && mv n98-magerun2.phar /usr/bin/magerun2 && chmod +x /usr/bin/magerun2 \
     && mkdir -p /usr/local/var/log && touch /usr/local/var/log/php-fpm.log && chmod 777 /usr/local/var/log/php-fpm.log
 
 # Composer
